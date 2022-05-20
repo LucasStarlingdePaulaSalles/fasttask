@@ -11,7 +11,14 @@ class Task:
         self.priority      = priority
 
     def print_task(self):
-        # TODO: print task details
+        print("Task details")
+        print("Name: ", self.task_name)
+        print("Status: ", self.status)
+        print("Creation date: ", self.creation_date)
+        print("Label: ", self.label)
+        print("Priority: ", self.priority)
+        print("Time Worked in this task: ", self.time_worked, "\n")
+
         return
 
     def start_working(self):
