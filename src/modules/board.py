@@ -41,7 +41,7 @@ class Board:
             print(
                 f'{task.task_name} {task.status} {task.creation_date} {task.priority}')
 
-    # update_task_status returns true if status was updates, and false if task not found
+    # print_task returns true if status was updates, and false if task not found
     def print_task(self, task_name: str):
         for task in self.tasks:
             if task.name == task_name:
