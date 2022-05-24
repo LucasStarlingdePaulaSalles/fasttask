@@ -4,9 +4,9 @@ import os
 
 class CLI:
     def __init__(self):
-        self._configfile = os.path.expanduser('~') + '/.fasttaskrc'
+        self._config_file = os.path.expanduser('~') + '/.fasttaskrc'
         self.config = configparser.ConfigParser()
-        self.config.read(self._configfile)
+        self.config.read(self._config_file)
         if(len(self.config.sections()) == 0):
             self.config.add_section('Settings')
             self.config.set('Settings', 'board', 'Default')
@@ -17,8 +17,8 @@ class CLI:
             
 
     def main(self):
-        print(self._configfile)
+        print(self._config_file)
 
     def save_configs(self):
-        with open(self._configfile, 'w') as configfile:
+        with open(self._config_file, 'w') as configfile:
                 self.config.write(configfile)
