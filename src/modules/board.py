@@ -1,15 +1,16 @@
 from typing import List
 
-from dbhandler import dbh
-from task import Task
-
+from src.modules.task import Task
 
 class Board:
-    def __init__(self, name: str, label: str = ""):
+    def __init__(self, board_id: int, name: str, label: str = ""):
+        self.board_id = board_id
         self.name = name
         self.label = label
         self.tasks: List[Task] = []
-        self.id = dbh.create_board(name, label)
+
+    def get_board_id(self) -> int:
+        return self.id
 
     def get_board_name(self) -> str:
         return self.name
@@ -17,35 +18,42 @@ class Board:
     def get_board_label(self) -> str:
         return self.label
 
+    def get_all_tasks(self):
+        return self.tasks
+
+    def get_task(self, task_name: str):
+        for task in self.tasks:
+            if task.name == task_name:
+                return task
+
+        return None #@TODO: Throw exception TaskNotFound
+
     def add_task(self, task: Task):
-        task.id = dbh.create_task(self.id, task)
         self.tasks.append(task)
 
-    # update_task_status returns true if status was updates, and false if task not found
     def update_task_status(self, task_name: str, new_status: str) -> bool:
         for task in self.tasks:
             if task.name == task_name:
-                task.status = new_status
-                dbh.update_task(task)
-                return True
+                task.update_status(new_status)
+                return task
 
-        return False
+        return None #@TODO: Throw exception TaskNotFound
 
     def delete_task(self, task_name: str):
-        dbh.delete_task(self.id, task_name)
-        self.tasks = filter(lambda task: (
-            task.task_name != task_name), self.tasks)
+        self.tasks = list(filter(lambda task: (
+            task.name != task_name), self.tasks))
 
-    def list_tasks(self):
-        for task in self.tasks:
-            print(
-                f'{task.task_name} {task.status} {task.creation_date} {task.priority}')
+# Print tasks should be moved to CLI
+#     def print_task(self, task_name: str):
+#         for task in self.tasks:
+#             if task.name == task_name:
+#                 task.print_task()
+#                 return
+# 
+#         print(f'Task {task_name} not found :(')
 
-    # print_task returns true if status was updates, and false if task not found
-    def print_task(self, task_name: str):
-        for task in self.tasks:
-            if task.name == task_name:
-                task.print_task()
-                return
 
-        print(f'Task {task_name} not found :(')
+# Prints tasks in an array of tasks
+# for task in self.tasks:
+#     print(
+#         f'{task.task_name} {task.status} {task.creation_date} {task.priority}')
