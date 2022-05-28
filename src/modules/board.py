@@ -1,5 +1,6 @@
 from typing import List
 
+
 from src.modules.task import Task
 
 class Board:
@@ -17,6 +18,7 @@ class Board:
 
     def get_board_label(self) -> str:
         return self.label
+
 
     def get_all_tasks(self):
         return self.tasks

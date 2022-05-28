@@ -16,6 +16,7 @@ class Singleton(type):
 
 
 class DBHandler(metaclass=Singleton):
+
     def __init__(self):
         default_db_file = os.path.expanduser('~') + '/.fasttaskdb'
         self.conn = self._create_connection(default_db_file)
