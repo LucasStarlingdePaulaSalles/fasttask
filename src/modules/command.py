@@ -33,7 +33,13 @@ class Command:
 
     def parse_system_call(self) -> str:
         return self.consume().split('/')[-1]
-
+    
+    def consume(self) -> str:
+        argument = ''
+        if len(self.argv) > 0:
+            argument = self.argv[0]
+            self.argv = self.argv[1:]
+        return argument
         
     def parse(self):
         if self.super():
@@ -55,23 +61,9 @@ class Command:
                     raise Exception('Error')
             self.parse_flags()
             self.exec(arguments)
-    
-    def parse_flags(self):
-        argument = self.consume()
-        while(argument != ''):
-            if not self.is_flag(argument):
-                self.help()
-                raise Exception('Error')
-            if argument in self.shorts:
-                argument = self.shorts[argument]
-            if argument not in self.flags:
-                self.help()
-                raise Exception('Error')
-            flag_exec = self.flags[argument]
-            if self.flag_has_parameter[argument]:
-                flag_exec(self.consume())
-            flag_exec()
 
+    def super(self) -> bool:
+        return len(self.sub_commands) != 0
 
     def shell(self):
         run_shell = True
@@ -90,25 +82,30 @@ class Command:
                     self.help()
                     self.consume()
 
-
-    def super(self) -> bool:
-        return len(self.sub_commands) != 0
-    
-    def is_flag(self, argument:str) -> bool:
-        return argument[0] == '-'
-
-    def consume(self) -> str:
-        argument = ''
-        if len(self.argv) > 0:
-            argument = self.argv[0]
-            self.argv = self.argv[1:]
-        return argument
-
     def get_arguments(self) -> List[str]:
         arguments = []
         for _ in range(self.argc):
             arguments.append(self.consume())
         return arguments
+    
+    def is_flag(self, argument:str) -> bool:
+        return argument[0] == '-'
+    
+    def parse_flags(self):
+        argument = self.consume()
+        while(argument != ''):
+            if not self.is_flag(argument):
+                self.help()
+                raise Exception('Error')
+            if argument in self.shorts:
+                argument = self.shorts[argument]
+            if argument not in self.flags:
+                self.help()
+                raise Exception('Error')
+            flag_exec = self.flags[argument]
+            if self.flag_has_parameter[argument]:
+                flag_exec(self.consume())
+            flag_exec()
 
 
 
