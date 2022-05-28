@@ -4,7 +4,7 @@ from typing import Dict, List, Callable
 class Command:
     def __init__(self, handle:str):
         self.handle: str = handle
-        self._help: str = handle + ' help'
+        self.helpstr: str = handle + ' help'
         self.exec: Callable[[List[str]], None] = zero_args_command_function(self.help)
         self.argc: int = 0
         self.argv: List[str] = []
@@ -15,7 +15,7 @@ class Command:
         self.shell_prefix: str = "> "
 
     def help(self):
-        print(self._help)
+        print(self.helpstr)
     
     def set_argv(self, argv):
         self.argv = argv
