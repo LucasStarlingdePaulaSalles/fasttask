@@ -1,3 +1,3 @@
-pip uninstall fasttask
-python3 setup.py sdist bdist_wheel
+pip uninstall fasttask -y
+python setup.py sdist bdist_wheel
 pip install -e .
