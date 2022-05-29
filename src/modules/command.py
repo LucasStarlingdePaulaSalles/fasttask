@@ -2,6 +2,7 @@ import sys
 from tkinter import E
 from typing import Dict, List, Callable
 
+
 class Command:
     def __init__(self, handle:str):
         self.handle: str = handle
@@ -30,7 +31,7 @@ class Command:
     def with_sub_command(self, handle: str, sub_command):
         if handle in self.flags:
             raise Exception(f'Error: {handle} flag already exists.')
-        if type(sub_command != Command):
+        if type(sub_command != type(self)):
             raise Exception('Error: type error sub_commant must be a Command object. ')
         if self.argc != 0:
             raise Exception('Error: this command has sub operations, it can\'t also execute a function with arguments.')
