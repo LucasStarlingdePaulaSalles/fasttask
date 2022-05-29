@@ -1,4 +1,5 @@
 from src.modules.command import Command
+from src.modules.cmd_example import example_cmd
 import configparser
 import os
 
@@ -15,12 +16,7 @@ class CLI:
             self.save_configs()
         self._board = self.config.get('Settings', 'board')
         self._max_work_session = int(self.config.get('Settings', 'max_work_session'))
-        self.command = Command('fasttask')
-        self.command.sub_commands = {
-            'board': Command('board'),
-            'task': Command('task')
-        }
-            
+        self.command = Command('fasttask').with_sub_command(example_cmd)
 
     def main(self):
         self.command.run()
