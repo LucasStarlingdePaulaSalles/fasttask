@@ -1,18 +1,48 @@
 import sys
+from tkinter import E
 from typing import Dict, List, Callable
 
 class Command:
     def __init__(self, handle:str):
         self.handle: str = handle
-        self.helpstr: str = handle + ' help'
+        self.description: str = handle + ' help'
         self.exec: Callable[[List[str]], None] = zero_args_command_function(self.help)
         self.argc: int = 0
         self.argv: List[str] = []
-        self.sub_commands: Dict[str,Command] = {}
+        self.sub_commands: Dict[str, Command] = {}
         self.flags: Dict[str,Callable] = {}
         self.shorts: Dict[str,str] = {}
         self.flag_has_parameter: Dict[str,bool] = {}
         self.shell_prefix: str = "> "
+
+    def with_descryption(self, descrption):
+        self.description = descrption
+    
+    def with_args(self, exec: Callable[[List[str]], None], argc: int):
+        if len(self.sub_commands) != 0:
+            raise Exception('Error: this command has sub operations, it can\'t also execute a function with arguments.')
+        self.exec = exec
+        self.argc = argc
+
+    def with_no_args(self, exec: Callable[[], None]):
+        self.exec = zero_args_command_function(exec)
+
+    def with_sub_command(self, handle: str, sub_command):
+        if handle in self.flags:
+            raise Exception(f'Error: {handle} flag already exists.')
+        if type(sub_command != Command):
+            raise Exception('Error: type error sub_commant must be a Command object. ')
+        if self.argc != 0:
+            raise Exception('Error: this command has sub operations, it can\'t also execute a function with arguments.')
+        sub_command.shell_prefix = ' ' + self.shell_prefix
+        self.sub_commands[handle] = sub_command
+
+    def with_flag(self, flag_handle: str, flag_short: str, flag_execute: Callable, takes_parameter: bool = False):
+        if flag_handle in self.flags:
+            raise Exception(f'Error: {flag_handle} flag already exists.')
+        self.shorts[flag_short] = flag_handle
+        self.flags[flag_handle] = flag_execute
+        self.flag_has_parameter[flag_handle] = takes_parameter
 
     def help(self):
         print(self.helpstr)
@@ -27,7 +57,7 @@ class Command:
             return
         try:
             self.parse()
-        except:
+        except Exception as _:
             self.help()
 
 
