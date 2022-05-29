@@ -1,9 +1,10 @@
+import os
 import sqlite3
 from sqlite3 import Error
-import os
 
-from src.modules.task import Task
 from src.modules.board import Board
+from src.modules.task import Task
+
 
 class Singleton(type):
     _instances = {}
@@ -72,7 +73,8 @@ class DBHandler(metaclass=Singleton):
         board_id = board_data[0]
         board_name = board_data[1]
         board_label = board_data[2]
-        board = Board(board_id, board_name, board_label) # ID, name, and tag, respectively
+        # ID, name, and tag, respectively
+        board = Board(board_id, board_name, board_label)
 
         for task in tasks_data:
             task_id = task[0]
@@ -84,8 +86,8 @@ class DBHandler(metaclass=Singleton):
             task_priority = task[6]
             task_board_id = task[7]
             board_task = Task(task_id, task_name, task_status,
-                    task_creation_date, task_label, task_board_id,
-                    task_time_worked, task_priority)
+                              task_creation_date, task_label, task_board_id,
+                              task_time_worked, task_priority)
             board.add_task(board_task)
         return board
 
@@ -138,7 +140,7 @@ class DBHandler(metaclass=Singleton):
         self.conn.commit()
 
     def get_task(self, task_id):
-        params(task_id,)
+        params = (task_id,)
 
         sql = """select
             id,
@@ -163,21 +165,21 @@ class DBHandler(metaclass=Singleton):
         task_priority = task_data[6]
         task_board_id = task_data[7]
         task = Task(task_id, task_name, task_status,
-                task_creation_date, task_label, task_board_id,
-                task_time_worked, task_priority)
+                    task_creation_date, task_label, task_board_id,
+                    task_time_worked, task_priority)
 
         return task
 
     # Returns the ID of the newly created task
     def create_task(self, board_id: int, task_name: str, status: str,
-            creation_date: str, label: str, time_worked: str, priority: int) -> int:
+                    creation_date: str, label: str, time_worked: str, priority: int) -> int:
         params = (task_name,
-                status,
-                creation_date,
-                label,
-                time_worked,
-                priority,
-                board_id)
+                  status,
+                  creation_date,
+                  label,
+                  time_worked,
+                  priority,
+                  board_id)
 
         sql = """insert into tasks
             (name, status, creation_date, label, time_worked, priority,
@@ -192,7 +194,7 @@ class DBHandler(metaclass=Singleton):
 
     # Returns TRUE if task was updated successfully, FALSE otherwise
     def update_task(self, task_id: int, new_status: str):
-        params = (new_status, task.id)
+        params = (new_status, task_id)
 
         sql = """update tasks
             set status = ?
