@@ -172,7 +172,7 @@ class Command:
         argument = self.consume()
         while(argument != ''):
             try:
-                argument = sanitize_flags(argument)
+                argument = self.sanitize_flags(argument)
                 flag_exec = self.flags[argument]
 
                 if self.flag_has_parameter[argument]:
