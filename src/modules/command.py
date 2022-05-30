@@ -1,20 +1,23 @@
 import sys
-from typing import Dict, List, Callable
+from typing import Callable, Dict, List
+
 
 class CommandEnd(Exception):
     pass
 
+
 class Command:
-    def __init__(self, handle:str):
+    def __init__(self, handle: str):
         self.handle: str = handle
         self.description: str = handle + ' help'
-        self.exec: Callable[[List[str]], None] = zero_args_command_function(self.help)
+        self.exec: Callable[[List[str]],
+                            None] = zero_args_command_function(self.help)
         self.argc: int = 0
         self.argv: List[str] = []
         self.sub_commands: Dict[str, Command] = {}
-        self.flags: Dict[str,Callable] = {}
-        self.shorts: Dict[str,str] = {}
-        self.flag_has_parameter: Dict[str,bool] = {}
+        self.flags: Dict[str, Callable] = {}
+        self.shorts: Dict[str, str] = {}
+        self.flag_has_parameter: Dict[str, bool] = {}
         self.shell_prefix: str = "> "
 
     def with_descryption(self, descrption):
@@ -23,7 +26,8 @@ class Command:
 
     def with_args(self, exec: Callable[[List[str]], None], argc: int):
         if len(self.sub_commands) != 0:
-            raise Exception('Error: this command has sub operations, it can\'t also execute a function with parameters.')
+            raise Exception(
+                'Error: this command has sub operations, it can\'t also execute a function with parameters.')
         self.exec = exec
         self.argc = argc
         return self
@@ -34,12 +38,14 @@ class Command:
 
     def with_sub_command(self, sub_command):
         if type(sub_command) != type(self):
-            raise Exception('Error: type error sub_commant must be a Command object. ')
+            raise Exception(
+                'Error: type error sub_commant must be a Command object. ')
         sub_handle = sub_command.handle
         if sub_handle in self.flags:
             raise Exception(f'Error: {sub_handle} flag already exists.')
         if self.argc != 0:
-            raise Exception('Error: this command takes parameters, it can\'t also support sub commands.')
+            raise Exception(
+                'Error: this command takes parameters, it can\'t also support sub commands.')
         sub_command.shell_prefix = ' ' + self.shell_prefix
         self.sub_commands[sub_handle] = sub_command
         return self
@@ -55,7 +61,7 @@ class Command:
 
     def help(self):
         print(self.description)
-    
+
     def set_argv(self, argv):
         self.argv = argv
 
@@ -71,7 +77,7 @@ class Command:
 
     def parse_system_call(self) -> str:
         return self.consume().split('/')[-1]
-    
+
     def consume(self) -> str:
         argument = ''
         if len(self.argv) > 0:
@@ -81,28 +87,34 @@ class Command:
 
     def parse(self):
         if self.super():
-            if len(self.argv) == 0:
-                self.shell()
-                return
-            sub_handle = self.consume()
-            if sub_handle not in self.sub_commands:
-                self.help()
-                raise Exception('Error')
-            sub_command = self.sub_commands[sub_handle]
-            sub_command.set_argv(self.argv)
-            self.argv = []
-            sub_command.parse()
+            self.parse_super()
         else:
-            if len(self.argv) < self.argc:
+            self.parse_command()
+
+    def parse_super(self):
+        if len(self.argv) == 0:
+            self.shell()
+            return
+        sub_handle = self.consume()
+        if sub_handle not in self.sub_commands:
+            self.help()
+            raise Exception('Error')
+        sub_command = self.sub_commands[sub_handle]
+        sub_command.set_argv(self.argv)
+        self.argv = []
+        sub_command.parse()
+
+    def parse_command(self):
+        if len(self.argv) < self.argc:
+            self.help()
+            raise Exception('Error')
+        arguments = self.get_arguments()
+        for argument in arguments:
+            if self.is_flag(argument):
                 self.help()
                 raise Exception('Error')
-            arguments = self.get_arguments()
-            for argument in arguments:
-                if self.is_flag(argument):
-                    self.help()
-                    raise Exception('Error')
-            self.parse_flags()
-            self.exec(arguments)
+        self.parse_flags()
+        self.exec(arguments)
 
     def super(self) -> bool:
         return len(self.sub_commands) != 0
@@ -138,7 +150,7 @@ class Command:
             arguments.append(self.consume())
         return arguments
 
-    def is_flag(self, argument:str) -> bool:
+    def is_flag(self, argument: str) -> bool:
         return argument[0] == '-'
 
     def sanitize_flags(self, argument):
@@ -173,7 +185,8 @@ class Command:
                 print(e)
 
 
+
 def zero_args_command_function(func: Callable[[], None]) -> Callable[[List[str]], None]:
-    def new_func(_:List[str]):
+    def new_func(_: List[str]):
         func()
     return new_func
