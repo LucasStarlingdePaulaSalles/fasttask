@@ -51,6 +51,8 @@ Para gerar os relatórios, utilizamos a seguinte configuração para o Lizard:
 - Ordenar por: 1) cyclomatic_complexity; 2) length
 - Para os arquivos do sistema em `src/`
 
+Você pode encontrar todos os relatórios na pasta `lizard_reports`.
+
 O comando utilizado foi:
 
 ```sh
