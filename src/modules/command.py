@@ -1,7 +1,8 @@
 import sys
-from tkinter import E
 from typing import Dict, List, Callable
 
+class CommandEnd(Exception):
+    pass
 
 class Command:
     def __init__(self, handle:str):
@@ -18,39 +19,46 @@ class Command:
 
     def with_descryption(self, descrption):
         self.description = descrption
-    
+        return self
+
     def with_args(self, exec: Callable[[List[str]], None], argc: int):
         if len(self.sub_commands) != 0:
-            raise Exception('Error: this command has sub operations, it can\'t also execute a function with arguments.')
+            raise Exception('Error: this command has sub operations, it can\'t also execute a function with parameters.')
         self.exec = exec
         self.argc = argc
+        return self
 
     def with_no_args(self, exec: Callable[[], None]):
         self.exec = zero_args_command_function(exec)
+        return self
 
-    def with_sub_command(self, handle: str, sub_command):
-        if handle in self.flags:
-            raise Exception(f'Error: {handle} flag already exists.')
-        if type(sub_command != type(self)):
+    def with_sub_command(self, sub_command):
+        if type(sub_command) != type(self):
             raise Exception('Error: type error sub_commant must be a Command object. ')
+        sub_handle = sub_command.handle
+        if sub_handle in self.flags:
+            raise Exception(f'Error: {sub_handle} flag already exists.')
         if self.argc != 0:
-            raise Exception('Error: this command has sub operations, it can\'t also execute a function with arguments.')
+            raise Exception('Error: this command takes parameters, it can\'t also support sub commands.')
         sub_command.shell_prefix = ' ' + self.shell_prefix
-        self.sub_commands[handle] = sub_command
+        self.sub_commands[sub_handle] = sub_command
+        return self
 
     def with_flag(self, flag_handle: str, flag_short: str, flag_execute: Callable, takes_parameter: bool = False):
         if flag_handle in self.flags:
             raise Exception(f'Error: {flag_handle} flag already exists.')
-        self.shorts[flag_short] = flag_handle
+        flag_handle = '--' + flag_handle
+        self.shorts['-' + flag_short] = flag_handle
         self.flags[flag_handle] = flag_execute
         self.flag_has_parameter[flag_handle] = takes_parameter
+        return self
 
     def help(self):
-        print(self.helpstr)
+        print(self.description)
     
     def set_argv(self, argv):
         self.argv = argv
-    
+
     def run(self):
         self.argv = sys.argv
         if self.handle != self.parse_system_call():
@@ -59,8 +67,7 @@ class Command:
         try:
             self.parse()
         except Exception as _:
-            self.help()
-
+            return
 
     def parse_system_call(self) -> str:
         return self.consume().split('/')[-1]
@@ -71,7 +78,7 @@ class Command:
             argument = self.argv[0]
             self.argv = self.argv[1:]
         return argument
-        
+
     def parse(self):
         if self.super():
             if len(self.argv) == 0:
@@ -79,16 +86,20 @@ class Command:
                 return
             sub_handle = self.consume()
             if sub_handle not in self.sub_commands:
+                self.help()
                 raise Exception('Error')
             sub_command = self.sub_commands[sub_handle]
             sub_command.set_argv(self.argv)
+            self.argv = []
             sub_command.parse()
         else:
             if len(self.argv) < self.argc:
+                self.help()
                 raise Exception('Error')
             arguments = self.get_arguments()
             for argument in arguments:
                 if self.is_flag(argument):
+                    self.help()
                     raise Exception('Error')
             self.parse_flags()
             self.exec(arguments)
@@ -104,13 +115,13 @@ class Command:
                 self.help()
                 self.consume()
             elif self.argv[0] == 'quit' or self.argv[0] == 'exit':
-                run_shell = False
-                self.consume()
+                raise CommandEnd('end')
             else:
                 try:
                     self.parse()
-                except Exception as _ :
-                    self.help()
+                except CommandEnd:
+                    return
+                except Exception:
                     self.consume()
 
     def get_arguments(self) -> List[str]:
@@ -118,10 +129,10 @@ class Command:
         for _ in range(self.argc):
             arguments.append(self.consume())
         return arguments
-    
+
     def is_flag(self, argument:str) -> bool:
         return argument[0] == '-'
-    
+
     def parse_flags(self):
         argument = self.consume()
         while(argument != ''):
@@ -136,9 +147,9 @@ class Command:
             flag_exec = self.flags[argument]
             if self.flag_has_parameter[argument]:
                 flag_exec(self.consume())
-            flag_exec()
-
-
+            else:
+                flag_exec()
+            argument = self.consume()
 
 def zero_args_command_function(func: Callable[[], None]) -> Callable[[List[str]], None]:
     def new_func(_:List[str]):
