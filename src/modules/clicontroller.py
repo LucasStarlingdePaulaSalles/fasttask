@@ -41,7 +41,8 @@ class CLI:
         self.priority_flag_value:int = 0
 
     def main(self):
-        board_create_cmd = Command("create").with_args(self.board_create(), 2)
+        board_create_cmd = Command("create").with_args(self.board_create(), 1) \
+             .with_flag('label', 'lb', self.label_flag(), True)
         board_list_cmd = Command("list").with_no_args(self.board_list())
         board_checkout_cmd = Command(
             "checkout").with_args(self.board_checkout(), 1)
@@ -74,14 +75,17 @@ class CLI:
 
     def board_create(self):
         def board_create_cmd(data: List[str]) -> None:
-            new_boar_id = self.dbh.create_board(data[0], data[1])
+            new_boar_id = self.dbh.create_board(data[0], self.label_flag_value)
             self.board = self.dbh.get_board(new_boar_id)
+            self._reset_flags()
 
         return board_create_cmd
 
     def board_list(self):
         def board_list_cmd() -> None:
-            return self.dbh.get_boards
+            boards = self.dbh.get_boards()
+            for board in boards:
+                print(board[1])
 
         return board_list_cmd
 
