@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="fasttask",
-    version="0.0.2",
+    version="1.0.0",
     author="Lucas Starling",
     author_email="lucastarling1@gmail.com",
     description="TODO",
