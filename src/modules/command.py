@@ -120,21 +120,29 @@ class Command:
         return len(self.sub_commands) != 0
 
     def shell(self):
-        run_shell = True
-        while(run_shell):
-            self.argv += input(self.shell_prefix).split(' ')
-            if self.argv[0] == 'help':
-                self.help()
-                self.consume()
-            elif self.argv[0] == 'quit' or self.argv[0] == 'exit':
-                raise CommandEnd('end')
-            else:
+        self.run_shell = True
+        while(self.run_shell):
+            self.argv  += input(self.shell_prefix).split(' ')
+            if not self.shell_interupt():
                 try:
                     self.parse()
                 except CommandEnd:
                     return
                 except Exception:
                     self.consume()
+    
+    def shell_interupt(self) -> bool:
+        if self.argv[0] == 'help':
+                self.help()
+                self.consume()
+                return True
+        
+        elif self.argv[0] == 'quit' or self.argv[0] == 'exit':
+                self.run_shell = False
+                self.consume()
+                return True
+                
+        return False
 
     def get_arguments(self) -> List[str]:
         arguments = []
@@ -145,23 +153,37 @@ class Command:
     def is_flag(self, argument: str) -> bool:
         return argument[0] == '-'
 
+    def sanitize_flags(self, argument):
+        if not self.is_flag(argument):
+            self.help()
+            raise Exception('Error')
+
+        if argument in self.shorts:
+            argument = self.shorts[argument]
+
+        if argument not in self.flags:
+            self.help()
+            raise Exception('Error')
+
+        return argument
+
+
     def parse_flags(self):
         argument = self.consume()
         while(argument != ''):
-            if not self.is_flag(argument):
-                self.help()
-                raise Exception('Error')
-            if argument in self.shorts:
-                argument = self.shorts[argument]
-            if argument not in self.flags:
-                self.help()
-                raise Exception('Error')
-            flag_exec = self.flags[argument]
-            if self.flag_has_parameter[argument]:
-                flag_exec(self.consume())
-            else:
-                flag_exec()
-            argument = self.consume()
+            try:
+                argument = sanitize_flags(argument)
+                flag_exec = self.flags[argument]
+
+                if self.flag_has_parameter[argument]:
+                    flag_exec(self.consume())
+                else:
+                    flag_exec()
+
+                argument = self.consume()
+            except Exception as e:
+                print(e)
+
 
 
 def zero_args_command_function(func: Callable[[], None]) -> Callable[[List[str]], None]:
