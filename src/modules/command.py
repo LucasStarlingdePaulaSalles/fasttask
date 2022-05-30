@@ -89,7 +89,7 @@ class Command:
         if self.super():
             self.parse_super()
         else:
-            self.parse_common()
+            self.parse_command()
 
     def parse_super(self):
         if len(self.argv) == 0:
@@ -104,7 +104,7 @@ class Command:
         self.argv = []
         sub_command.parse()
 
-    def parse_common(self):
+    def parse_command(self):
         if len(self.argv) < self.argc:
             self.help()
             raise Exception('Error')
