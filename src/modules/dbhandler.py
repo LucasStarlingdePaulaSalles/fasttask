@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from sqlite3 import Error
+from datetime import date
 
 from src.modules.board import Board
 from src.modules.task import Task
@@ -118,7 +119,7 @@ class DBHandler(metaclass=Singleton):
         return board
 
     # Returns the newly created board
-    def create_board(self, board_name: str, board_label: str) -> int:
+    def create_board(self, board_name: str, board_label: str) -> Board:
         params = (board_name, board_label)
 
         sql = """insert into boards
@@ -171,8 +172,10 @@ class DBHandler(metaclass=Singleton):
         return task
 
     # Returns the ID of the newly created task
-    def create_task(self, board_id: int, task_name: str, status: str,
-                    creation_date: str, label: str, time_worked: str, priority: int) -> int:
+    def create_task(self, board_id: int, task_name: str, label: str = '', priority: int = 0) -> Task:
+        creation_date: str = date.today().strftime('%d/%m/%Y')
+        status: str = 'ToDo'
+        time_worked: int = 0
         params = (task_name,
                   status,
                   creation_date,

@@ -34,14 +34,3 @@ class Task:
     def stop_working(self):
         pass
 
-# Printing should be extracted to CLI
-#    def print_task(self):
-#        print("Task details")
-#        print("Name: ", self.name)
-#        print("Status: ", self.status)
-#        print("Creation date: ", self.creation_date)
-#        print("Label: ", self.label)
-#        print("Priority: ", self.priority)
-#        print("Time Worked in this task: ", self.time_worked, "\n")
-#
-#        return
