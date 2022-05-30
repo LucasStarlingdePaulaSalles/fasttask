@@ -108,21 +108,29 @@ class Command:
         return len(self.sub_commands) != 0
 
     def shell(self):
-        run_shell = True
-        while(run_shell):
+        self.run_shell = True
+        while(self.run_shell):
             self.argv  += input(self.shell_prefix).split(' ')
-            if self.argv[0] == 'help':
-                self.help()
-                self.consume()
-            elif self.argv[0] == 'quit' or self.argv[0] == 'exit':
-                raise CommandEnd('end')
-            else:
+            if not self.shell_interupt():
                 try:
                     self.parse()
                 except CommandEnd:
                     return
                 except Exception:
                     self.consume()
+    
+    def shell_interupt(self) -> bool:
+        if self.argv[0] == 'help':
+                self.help()
+                self.consume()
+                return True
+        
+        elif self.argv[0] == 'quit' or self.argv[0] == 'exit':
+                self.run_shell = False
+                self.consume()
+                return True
+                
+        return False
 
     def get_arguments(self) -> List[str]:
         arguments = []
