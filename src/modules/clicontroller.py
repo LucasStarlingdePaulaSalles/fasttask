@@ -85,13 +85,20 @@ class CLI:
         def board_list_cmd() -> None:
             boards = self.dbh.get_boards()
             for board in boards:
-                print(board[1])
+                print(board[1], f'(id={board[0]})')
 
         return board_list_cmd
 
     def board_checkout(self):
         def board_checkout_cmd(data: List[str]) -> None:
-            self.board = self.dbh.get_board(int(data[0]))
+            try:
+                board_id = int(data[0])
+            except:
+                print('board checkout parameter must be a board id')
+                return
+            self.board = self.dbh.get_board(board_id)
+            self.config.set('Settings', 'board', str(self.board.board_id))
+            self.save_configs()
 
         return board_checkout_cmd
 
@@ -144,6 +151,7 @@ class CLI:
 
     def task_list(self) -> Callable[[], None]:
         def task_list_cmd() -> None:
+            print('On', self.board.get_board_name(), f'(id={self.board.board_id}):')
             for task in self.board.get_all_tasks():
                 print(task.name)
         return task_list_cmd
