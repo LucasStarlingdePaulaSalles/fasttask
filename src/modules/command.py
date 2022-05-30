@@ -133,23 +133,37 @@ class Command:
     def is_flag(self, argument:str) -> bool:
         return argument[0] == '-'
 
+    def sanitize_flags(self, argument):
+        if not self.is_flag(argument):
+            self.help()
+            raise Exception('Error')
+
+        if argument in self.shorts:
+            argument = self.shorts[argument]
+
+        if argument not in self.flags:
+            self.help()
+            raise Exception('Error')
+
+        return argument
+
+
     def parse_flags(self):
         argument = self.consume()
         while(argument != ''):
-            if not self.is_flag(argument):
-                self.help()
-                raise Exception('Error')
-            if argument in self.shorts:
-                argument = self.shorts[argument]
-            if argument not in self.flags:
-                self.help()
-                raise Exception('Error')
-            flag_exec = self.flags[argument]
-            if self.flag_has_parameter[argument]:
-                flag_exec(self.consume())
-            else:
-                flag_exec()
-            argument = self.consume()
+            try:
+                argument = sanitize_flags(argument)
+                flag_exec = self.flags[argument]
+
+                if self.flag_has_parameter[argument]:
+                    flag_exec(self.consume())
+                else:
+                    flag_exec()
+
+                argument = self.consume()
+            except Exception as e:
+                print(e)
+
 
 def zero_args_command_function(func: Callable[[], None]) -> Callable[[List[str]], None]:
     def new_func(_:List[str]):
