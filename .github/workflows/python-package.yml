@@ -6,15 +6,14 @@ name: Python package
 on: [push]
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
-
+        python-version: ["3.8"]
     steps:
     - uses: actions/checkout@v3
     - name: Test with unittest
       run: |
-        python -m unittest ./tests/task_tests.py ./tests/dbhandler_tests.py ./tests/board_tests.py 
+        cd tests && python -m unittest task_tests.py dbhandler_tests.py board_tests.py 
+        
