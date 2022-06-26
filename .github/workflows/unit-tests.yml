@@ -1,0 +1,26 @@
+name: Unit Tests
+on: [pull_request, push]
+
+jobs:
+  test:
+    name: Run tests & display coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pip install coverage
+
+      - name: Run tests and generate .coverage file
+        run: coverage run -m unittest tests/*_tests.py 
+
+      - name: Run tests and generate .coverage file
+        run: coverage report -m
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          flags: unittests 
+          name: codecov-umbrella 
+          fail_ci_if_error: true 
+          verbose: true 

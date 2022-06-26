@@ -155,8 +155,7 @@ class DBHandler(metaclass=Singleton):
             from tasks where id = ?"""
 
         self.cur.execute(sql, params)
-        task_data = self.cur.fetchall()
-
+        task_data = self.cur.fetchall()[0]
         task_id = task_data[0]
         task_name = task_data[1]
         task_status = task_data[2]

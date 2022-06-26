@@ -11,7 +11,7 @@ class Board:
         self.tasks: List[Task] = []
 
     def get_board_id(self) -> int:
-        return self.id
+        return self.board_id
 
     def get_board_name(self) -> str:
         return self.name
