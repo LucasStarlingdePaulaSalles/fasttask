@@ -33,7 +33,25 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(updated_task.status == "todo")
 
     def test_add_two_tasks_and_update_one(self):
-        pass
+        task1 = Task(task_id=0, task_name="test_task1", status="none",
+                creation_date="", label="test", board_id="1", time_worked="0",
+                priority=0)
+        task2 = Task(task_id=1, task_name="test_task2", status="none",
+                creation_date="", label="test", board_id="1", time_worked="0",
+                priority=0)
+
+        self.board.add_task(task1)
+        self.board.add_task(task2)
+        self.assertTrue(task2.status == "none")
+        self.assertTrue(len(self.board.get_all_tasks()) == 2)
+
+        task2_updated = self.board.update_task_status(task_name=task2.name,
+                new_status="todo")
+        
+        self.assertTrue(task2_updated.status == "todo")
+
+        self.assertTrue(task1 in self.board.get_all_tasks())
+        self.assertTrue(task2 in self.board.get_all_tasks())
 
     def test_delete_task(self):
         task = Task(task_id=0, task_name="test_task", status="none",
@@ -46,4 +64,18 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(len(self.board.get_all_tasks()) == 0)
 
     def test_add_two_tasks_and_delete_one(self):
-        pass
+        task1 = Task(task_id=0, task_name="test_task1", status="none",
+                creation_date="", label="test", board_id="1", time_worked="0",
+                priority=0)
+        task2 = Task(task_id=1, task_name="test_task2", status="none",
+                creation_date="", label="test", board_id="1", time_worked="0",
+                priority=0)
+
+        self.board.add_task(task1)
+        self.board.add_task(task2)
+        self.assertTrue(len(self.board.get_all_tasks()) == 2)
+
+        self.board.delete_task(task_name=task1.name)
+        self.assertTrue(len(self.board.get_all_tasks()) == 1)
+
+        
