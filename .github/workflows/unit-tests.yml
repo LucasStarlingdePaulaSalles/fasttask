@@ -11,8 +11,8 @@ jobs:
       - name: Install dependencies
         run: pip install coverage
 
-      - name: Run tests and generate .coverage file
-        run: coverage run -m unittest tests/*_tests.py 
+      - name: Run unit tests and generate .coverage file
+        run: coverage run -m unittest test/test_*.py test/integration/test_*.py 
 
       - name: Run tests and generate .coverage file
         run: coverage report -m
