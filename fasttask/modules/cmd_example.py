@@ -1,4 +1,4 @@
-from src.modules.command import Command, List
+from fasttask.modules.command import Command, List
 
 flag_a = ''
 

@@ -3,8 +3,8 @@ import sqlite3
 from sqlite3 import Error
 from datetime import date
 
-from src.modules.board import Board
-from src.modules.task import Task
+from fasttask.modules.board import Board
+from fasttask.modules.task import Task
 
 
 class Singleton(type):

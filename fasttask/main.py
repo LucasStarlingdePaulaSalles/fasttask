@@ -1,6 +1,6 @@
 import sys
 
-from src.modules.clicontroller import CLI
+from fasttask.modules.clicontroller import CLI
 
 def main():
     cli = CLI()
