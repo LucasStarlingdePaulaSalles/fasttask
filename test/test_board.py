@@ -47,7 +47,7 @@ class TestBoard(unittest.TestCase):
 
         task2_updated = self.board.update_task_status(task_name=task2.name,
                 new_status="todo")
-        
+
         self.assertTrue(task2_updated.status == "todo")
 
         self.assertTrue(task1 in self.board.get_all_tasks())
@@ -78,4 +78,11 @@ class TestBoard(unittest.TestCase):
         self.board.delete_task(task_name=task1.name)
         self.assertTrue(len(self.board.get_all_tasks()) == 1)
 
-        
+    def test_get_task_for_nonexisting_task_returns_none(self):
+        self.assertEqual(self.board.get_task(task_name='non_existing_task'), None)
+
+
+    def test_update_task_for_nonexisting_task_returns_none(self):
+        updated_task = self.board.update_task_status(task_name='non_existing_task',
+                new_status="todo")
+        self.assertEqual(updated_task, None)
