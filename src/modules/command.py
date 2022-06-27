@@ -20,8 +20,8 @@ class Command:
         self.flag_has_parameter: Dict[str, bool] = {}
         self.shell_prefix: str = "> "
 
-    def with_descryption(self, descrption):
-        self.description = descrption
+    def with_descryption(self, description):
+        self.description = description
         return self
 
     def with_args(self, exec: Callable[[List[str]], None], argc: int):
@@ -41,7 +41,7 @@ class Command:
             raise Exception(
                 'Error: type error sub_commant must be a Command object. ')
         sub_handle = sub_command.handle
-        if sub_handle in self.flags:
+        if sub_handle in self.sub_commands:
             raise Exception(f'Error: {sub_handle} flag already exists.')
         if self.argc != 0:
             raise Exception(
@@ -51,9 +51,9 @@ class Command:
         return self
 
     def with_flag(self, flag_handle: str, flag_short: str, flag_execute: Callable, takes_parameter: bool = False):
+        flag_handle = '--' + flag_handle
         if flag_handle in self.flags:
             raise Exception(f'Error: {flag_handle} flag already exists.')
-        flag_handle = '--' + flag_handle
         self.shorts['-' + flag_short] = flag_handle
         self.flags[flag_handle] = flag_execute
         self.flag_has_parameter[flag_handle] = takes_parameter
@@ -130,18 +130,18 @@ class Command:
                     return
                 except Exception:
                     self.consume()
-    
+
     def shell_interupt(self) -> bool:
         if self.argv[0] == 'help':
                 self.help()
                 self.consume()
                 return True
-        
+
         elif self.argv[0] == 'quit' or self.argv[0] == 'exit':
                 self.run_shell = False
                 self.consume()
                 return True
-                
+
         return False
 
     def get_arguments(self) -> List[str]:
@@ -156,14 +156,14 @@ class Command:
     def sanitize_flags(self, argument):
         if not self.is_flag(argument):
             self.help()
-            raise Exception('Error')
+            raise Exception(f'{argument} is not a flag')
 
         if argument in self.shorts:
             argument = self.shorts[argument]
 
         if argument not in self.flags:
             self.help()
-            raise Exception('Error')
+            raise Exception(f'{argument} is not a command flag')
 
         return argument
 
