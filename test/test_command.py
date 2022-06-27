@@ -1,6 +1,6 @@
 import unittest
 from typing import List
-from src.modules.command import Command
+from fasttask.modules.command import Command
 
 class TestCommand(unittest.TestCase):
 
