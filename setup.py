@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="fasttask",
-    version="1.0.0",
+    version="1.0.1",
     author="Lucas Starling",
     author_email="lucastarling1@gmail.com",
     description="TODO",
@@ -13,9 +13,6 @@ setuptools.setup(
     url="https://github.com/LucasStarlingdePaulaSalles/fasttask",
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
-    py_modules=["src"], 
-    # requires=['numpy'],
-    # install_requires=['numpy'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -23,7 +20,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
-            'fasttask=src:main',
+            'fasttask=fasttask.main:main',
         ],
     },
 )

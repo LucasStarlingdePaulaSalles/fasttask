@@ -1,6 +1,6 @@
 import unittest
 import os
-from src.modules.dbhandler import DBHandler
+from fasttask.modules.dbhandler import DBHandler
 
 class TestDBHandler(unittest.TestCase):
     @classmethod

@@ -1,5 +1,5 @@
 import unittest
-from src.modules.task import Task
+from fasttask.modules.task import Task
 
 class TestTask(unittest.TestCase):
     def setUp(self):

@@ -1,5 +1,3 @@
-#!/bin/bash
-
 echo "Did you recall updating the version on setup.py?"
 sleep 3
 rm -rf dist

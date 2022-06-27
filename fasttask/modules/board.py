@@ -1,7 +1,7 @@
 from typing import List
 
 
-from src.modules.task import Task
+from fasttask.modules.task import Task
 
 class Board:
     def __init__(self, board_id: int, name: str, label: str = ""):

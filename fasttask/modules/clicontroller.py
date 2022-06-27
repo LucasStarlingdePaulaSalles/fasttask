@@ -2,9 +2,9 @@ import configparser
 import os
 from typing import Callable, List
 
-from src.modules.cmd_example import example_cmd
-from src.modules.command import Command
-from src.modules.dbhandler import DBHandler
+from fasttask.modules.cmd_example import example_cmd
+from fasttask.modules.command import Command
+from fasttask.modules.dbhandler import DBHandler
 
 
 class CLI:

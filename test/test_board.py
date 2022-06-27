@@ -1,6 +1,6 @@
 import unittest
-from src.modules.board import Board
-from src.modules.task import Task
+from fasttask.modules.board import Board
+from fasttask.modules.task import Task
 
 class TestBoard(unittest.TestCase):
 
